@@ -9,7 +9,7 @@ exports.list = asyncHandler(async (req, res) => {
 });
 
 exports.get = asyncHandler(async (req, res) => {
-  const row = await model.findById(req.params.id);
+  const row = await model.find(req.params.roleId, req.params.permissionId);
   if (!row) return res.status(404).json({ message: 'Role permission not found' });
   res.json(row);
 });
@@ -25,14 +25,14 @@ exports.create = [
 exports.update = [
   validate(updateRolePermission),
   asyncHandler(async (req, res) => {
-    const exists = await model.findById(req.params.id);
+    const exists = await model.find(req.params.roleId, req.params.permissionId);
     if (!exists) return res.status(404).json({ message: 'Role permission not found' });
-    const updated = await model.update(req.params.id, req.validatedBody);
+    const updated = await model.update(req.params.roleId, req.params.permissionId, req.validatedBody);
     res.json(updated);
   })
 ];
 
 exports.remove = asyncHandler(async (req, res) => {
-  await model.remove(req.params.id);
+  await model.remove(req.params.roleId, req.params.permissionId);
   res.status(204).end();
 });

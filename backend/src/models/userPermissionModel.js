@@ -1,24 +1,26 @@
 const { pool } = require('../config/db');
 const { pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'userpermission';
-const COLUMNS = ['userId', 'permissionId', 'allow'];
+const TABLE = 'user_permissions';
+const COLUMNS = ['user_id', 'permission_id', 'allow'];
 
 const list = async (filters = {}, page, pageSize) => {
   const clauses = [];
   const params = [];
-  if (filters.userId) {
-    clauses.push('userId = ?');
-    params.push(filters.userId);
+  const userId = filters.user_id ?? filters.userId;
+  const permissionId = filters.permission_id ?? filters.permissionId;
+  if (userId) {
+    clauses.push('user_id = ?');
+    params.push(userId);
   }
-  if (filters.permissionId) {
-    clauses.push('permissionId = ?');
-    params.push(filters.permissionId);
+  if (permissionId) {
+    clauses.push('permission_id = ?');
+    params.push(permissionId);
   }
   const where = clauses.length ? ' WHERE ' + clauses.join(' AND ') : '';
   const { limit, offset } = paginationParams(page, pageSize);
   const [rows] = await pool.query(
-    `SELECT * FROM \`${TABLE}\`${where} ORDER BY id DESC LIMIT ? OFFSET ?`,
+    `SELECT * FROM \`${TABLE}\`${where} ORDER BY user_id, permission_id LIMIT ? OFFSET ?`,
     [...params, limit, offset]
   );
   return rows;

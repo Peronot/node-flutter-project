@@ -1,14 +1,14 @@
 const { pool } = require('../config/db');
 const { buildSearch, pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'appointment';
-const COLUMNS = ['patientId', 'doctorId', 'scheduled_at', 'status', 'notes'];
-const SEARCH_FIELDS = ['status', 'notes'];
+const TABLE = 'appointments';
+const COLUMNS = ['patient_id', 'doctor_id', 'appointment_date', 'appointment_time', 'status'];
+const SEARCH_FIELDS = ['status'];
 
 const list = async (search, page, pageSize) => {
   const { clause, params } = buildSearch(search, SEARCH_FIELDS);
   const { limit, offset } = paginationParams(page, pageSize);
-  const sql = `SELECT * FROM \`${TABLE}\`${clause} ORDER BY scheduled_at DESC LIMIT ? OFFSET ?`;
+  const sql = `SELECT * FROM \`${TABLE}\`${clause} ORDER BY appointment_date DESC, appointment_time DESC LIMIT ? OFFSET ?`;
   const [rows] = await pool.query(sql, [...params, limit, offset]);
   return rows;
 };

@@ -1,8 +1,8 @@
 const { pool } = require('../config/db');
 const { buildSearch, pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'payment';
-const COLUMNS = ['invoiceId', 'amount', 'method', 'paid_at'];
+const TABLE = 'payments';
+const COLUMNS = ['invoice_id', 'amount', 'method', 'paid_at', 'status'];
 const SEARCH_FIELDS = ['method'];
 
 const list = async (search, page, pageSize) => {

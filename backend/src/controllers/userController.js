@@ -2,7 +2,7 @@ const model = require('../models/userModel');
 const asyncHandler = require('../utils/asyncHandler');
 const bcrypt = require('bcryptjs');
 const validate = require('../middleware/validate');
-const { updateUser } = require('../validators/userSchemas');
+const { createUser, updateUser } = require('../validators/userSchemas');
 
 exports.list = asyncHandler(async (req, res) => {
   const rows = await model.list(req.query.search, req.query.page, req.query.pageSize);
@@ -15,14 +15,17 @@ exports.get = asyncHandler(async (req, res) => {
   res.json(row);
 });
 
-exports.create = asyncHandler(async (req, res) => {
-  const body = req.body;
-  if (body.password) {
-    body.password = await bcrypt.hash(body.password, 10);
-  }
-  const created = await model.create(body);
-  res.status(201).json(created);
-});
+exports.create = [
+  validate(createUser),
+  asyncHandler(async (req, res) => {
+    const body = { ...req.validatedBody };
+    if (body.password) {
+      body.password = await bcrypt.hash(body.password, 10);
+    }
+    const created = await model.create(body);
+    res.status(201).json(created);
+  })
+];
 
 exports.update = [
   validate(updateUser),

@@ -34,8 +34,27 @@ class ApiClient {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  Future<List<dynamic>> getList(String path) async {
-    final res = await _client.get(Uri.parse('$_baseUrl$path'), headers: _headers());
+  Future<Map<String, dynamic>> put(String path, Map<String, dynamic> body) async {
+    final res = await _client.put(
+      Uri.parse('$_baseUrl$path'),
+      headers: _headers(),
+      body: jsonEncode(body),
+    );
+    _throwIfError(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
+  Future<void> delete(String path) async {
+    final res = await _client.delete(
+      Uri.parse('$_baseUrl$path'),
+      headers: _headers(),
+    );
+    _throwIfError(res);
+  }
+
+  Future<List<dynamic>> getList(String path, {Map<String, String>? query}) async {
+    final uri = Uri.parse('$_baseUrl$path').replace(queryParameters: query);
+    final res = await _client.get(uri, headers: _headers());
     _throwIfError(res);
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -52,6 +71,7 @@ class ApiClient {
 
   void _throwIfError(http.Response res) {
     if (res.statusCode >= 400) {
+      if (res.statusCode == 401) throw UnauthorizedException();
       String message = 'API error ${res.statusCode}';
       try {
         final decoded = jsonDecode(res.body);
@@ -63,3 +83,5 @@ class ApiClient {
     }
   }
 }
+
+class UnauthorizedException implements Exception {}

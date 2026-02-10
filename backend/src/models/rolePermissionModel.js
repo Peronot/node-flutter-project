@@ -1,40 +1,46 @@
 const { pool } = require('../config/db');
 const { buildSearch, pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'rolepermission';
-const COLUMNS = ['role', 'permissionId'];
-const SEARCH_FIELDS = ['role'];
+const TABLE = 'role_permissions';
+const COLUMNS = ['role_id', 'permission_id'];
+const SEARCH_FIELDS = ['role_id', 'permission_id'];
 
 const list = async (search, page, pageSize) => {
   const { clause, params } = buildSearch(search, SEARCH_FIELDS);
   const { limit, offset } = paginationParams(page, pageSize);
   const [rows] = await pool.query(
-    `SELECT * FROM \`${TABLE}\`${clause} ORDER BY id ASC LIMIT ? OFFSET ?`,
+    `SELECT * FROM \`${TABLE}\`${clause} ORDER BY role_id ASC, permission_id ASC LIMIT ? OFFSET ?`,
     [...params, limit, offset]
   );
   return rows;
 };
 
-const findById = async (id) => {
-  const [rows] = await pool.query(`SELECT * FROM \`${TABLE}\` WHERE id = ?`, [id]);
+const find = async (roleId, permissionId) => {
+  const [rows] = await pool.query(
+    `SELECT * FROM \`${TABLE}\` WHERE role_id = ? AND permission_id = ?`,
+    [roleId, permissionId]
+  );
   return rows[0] || null;
 };
 
 const create = async (data) => {
   const payload = pickFields(data, COLUMNS);
-  const [result] = await pool.query(`INSERT INTO \`${TABLE}\` SET ?`, payload);
-  return { id: result.insertId, ...payload };
+  await pool.query(`INSERT INTO \`${TABLE}\` SET ?`, payload);
+  return payload;
 };
 
-const update = async (id, data) => {
+const update = async (roleId, permissionId, data) => {
   const payload = pickFields(data, COLUMNS);
-  if (!Object.keys(payload).length) return findById(id);
-  await pool.query(`UPDATE \`${TABLE}\` SET ? WHERE id = ?`, [payload, id]);
-  return findById(id);
+  if (!Object.keys(payload).length) return find(roleId, permissionId);
+  await pool.query(
+    `UPDATE \`${TABLE}\` SET ? WHERE role_id = ? AND permission_id = ?`,
+    [payload, roleId, permissionId]
+  );
+  return find(payload.role_id || roleId, payload.permission_id || permissionId);
 };
 
-const remove = async (id) => {
-  await pool.query(`DELETE FROM \`${TABLE}\` WHERE id = ?`, [id]);
+const remove = async (roleId, permissionId) => {
+  await pool.query(`DELETE FROM \`${TABLE}\` WHERE role_id = ? AND permission_id = ?`, [roleId, permissionId]);
 };
 
-module.exports = { list, findById, create, update, remove };
+module.exports = { list, find, create, update, remove };

@@ -1,13 +1,16 @@
 const Joi = require('joi');
 
 const base = {
-  name: Joi.string().min(2).max(120),
-  description: Joi.string().allow('', null)
+  appointment_id: Joi.number().integer().positive(),
+  doctor_id: Joi.number().integer().positive(),
+  notes: Joi.string().allow('', null),
+  created_at: Joi.date().iso()
 };
 
 const createTreatment = Joi.object({
   ...base,
-  name: base.name.required()
+  appointment_id: base.appointment_id.required(),
+  doctor_id: base.doctor_id.required()
 });
 
 const updateTreatment = Joi.object(base);

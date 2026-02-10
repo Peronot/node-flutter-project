@@ -1,14 +1,14 @@
 const Joi = require('joi');
 
 const base = {
-  role: Joi.string().max(120),
-  permissionId: Joi.number().integer().positive()
+  role_id: Joi.number().integer().positive(),
+  permission_id: Joi.number().integer().positive()
 };
 
 const createRolePermission = Joi.object({
   ...base,
-  role: base.role.required(),
-  permissionId: base.permissionId.required()
+  role_id: base.role_id.required(),
+  permission_id: base.permission_id.required()
 });
 
 const updateRolePermission = Joi.object(base);

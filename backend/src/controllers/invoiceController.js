@@ -19,13 +19,9 @@ exports.get = asyncHandler(async (req, res) => {
 exports.create = [
   validate(createInvoice),
   asyncHandler(async (req, res) => {
-    const { patientId, doctorId } = req.validatedBody;
-    const [patient, doctor] = await Promise.all([
-      patientModel.findById(patientId),
-      doctorModel.findById(doctorId)
-    ]);
-    if (!patient) return res.status(400).json({ message: 'Invalid patientId' });
-    if (!doctor) return res.status(400).json({ message: 'Invalid doctorId' });
+    const { patient_id } = req.validatedBody;
+    const patient = await patientModel.findById(patient_id);
+    if (!patient) return res.status(400).json({ message: 'Invalid patient_id' });
     const conn = await model.getConnection();
     try {
       await conn.beginTransaction();
@@ -47,13 +43,9 @@ exports.update = [
     const exists = await model.findById(req.params.id);
     if (!exists) return res.status(404).json({ message: 'Invoice not found' });
     const body = req.validatedBody;
-    if (body.patientId) {
-      const patient = await patientModel.findById(body.patientId);
-      if (!patient) return res.status(400).json({ message: 'Invalid patientId' });
-    }
-    if (body.doctorId) {
-      const doctor = await doctorModel.findById(body.doctorId);
-      if (!doctor) return res.status(400).json({ message: 'Invalid doctorId' });
+    if (body.patient_id) {
+      const patient = await patientModel.findById(body.patient_id);
+      if (!patient) return res.status(400).json({ message: 'Invalid patient_id' });
     }
     const conn = await model.getConnection();
     try {

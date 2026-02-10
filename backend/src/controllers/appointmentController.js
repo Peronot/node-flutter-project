@@ -19,13 +19,13 @@ exports.get = asyncHandler(async (req, res) => {
 exports.create = [
   validate(createAppointment),
   asyncHandler(async (req, res) => {
-    const { patientId, doctorId } = req.validatedBody;
+    const { patient_id, doctor_id } = req.validatedBody;
     const [patient, doctor] = await Promise.all([
-      patientModel.findById(patientId),
-      doctorModel.findById(doctorId)
+      patientModel.findById(patient_id),
+      doctorModel.findById(doctor_id)
     ]);
-    if (!patient) return res.status(400).json({ message: 'Invalid patientId' });
-    if (!doctor) return res.status(400).json({ message: 'Invalid doctorId' });
+    if (!patient) return res.status(400).json({ message: 'Invalid patient_id' });
+    if (!doctor) return res.status(400).json({ message: 'Invalid doctor_id' });
     const created = await model.create(req.validatedBody);
     res.status(201).json(created);
   })
@@ -37,13 +37,13 @@ exports.update = [
     const exists = await model.findById(req.params.id);
     if (!exists) return res.status(404).json({ message: 'Appointment not found' });
     const body = req.validatedBody;
-    if (body.patientId) {
-      const patient = await patientModel.findById(body.patientId);
-      if (!patient) return res.status(400).json({ message: 'Invalid patientId' });
+    if (body.patient_id) {
+      const patient = await patientModel.findById(body.patient_id);
+      if (!patient) return res.status(400).json({ message: 'Invalid patient_id' });
     }
-    if (body.doctorId) {
-      const doctor = await doctorModel.findById(body.doctorId);
-      if (!doctor) return res.status(400).json({ message: 'Invalid doctorId' });
+    if (body.doctor_id) {
+      const doctor = await doctorModel.findById(body.doctor_id);
+      if (!doctor) return res.status(400).json({ message: 'Invalid doctor_id' });
     }
     const updated = await model.update(req.params.id, body);
     res.json(updated);
