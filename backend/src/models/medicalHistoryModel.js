@@ -1,9 +1,9 @@
 const { pool } = require('../config/db');
 const { buildSearch, pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'medicalhistory';
-const COLUMNS = ['patientId', 'allergyId', 'details'];
-const SEARCH_FIELDS = ['details'];
+const TABLE = 'medical_histories';
+const COLUMNS = ['patient_id', 'description', 'created_at'];
+const SEARCH_FIELDS = ['description'];
 
 const list = async (search, page, pageSize) => {
   const { clause, params } = buildSearch(search, SEARCH_FIELDS);

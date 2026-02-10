@@ -1,7 +1,7 @@
 const { pool } = require('../config/db');
 const { buildSearch, pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'procedure';
+const TABLE = 'procedures';
 const COLUMNS = ['name', 'price'];
 const SEARCH_FIELDS = ['name'];
 

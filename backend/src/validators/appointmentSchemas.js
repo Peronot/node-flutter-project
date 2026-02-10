@@ -1,18 +1,20 @@
 const Joi = require('joi');
 
 const base = {
-  patientId: Joi.number().integer().positive(),
-  doctorId: Joi.number().integer().positive(),
-  scheduled_at: Joi.date().iso(),
-  status: Joi.string().valid('pending', 'confirmed', 'cancelled', 'completed'),
+  patient_id: Joi.number().integer().positive(),
+  doctor_id: Joi.number().integer().positive(),
+  appointment_date: Joi.date().iso(),
+  appointment_time: Joi.string(),
+  status: Joi.string().valid('pending', 'booked', 'confirmed', 'cancelled', 'completed'),
   notes: Joi.string().allow('', null)
 };
 
 const createAppointment = Joi.object({
   ...base,
-  patientId: base.patientId.required(),
-  doctorId: base.doctorId.required(),
-  scheduled_at: base.scheduled_at.required(),
+  patient_id: base.patient_id.required(),
+  doctor_id: base.doctor_id.required(),
+  appointment_date: base.appointment_date.required(),
+  appointment_time: base.appointment_time.required(),
   status: base.status.default('pending')
 });
 

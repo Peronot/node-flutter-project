@@ -1,7 +1,8 @@
 const Joi = require('joi');
 
 const base = {
-  name: Joi.string().min(2).max(120)
+  name: Joi.string().min(2).max(120),
+  description: Joi.string().allow('', null)
 };
 
 const createPermission = Joi.object({

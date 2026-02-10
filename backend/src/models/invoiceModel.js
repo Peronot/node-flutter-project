@@ -1,15 +1,20 @@
 const { pool } = require('../config/db');
 const { buildSearch, pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'invoice';
-const COLUMNS = ['patientId', 'doctorId', 'total', 'status', 'issued_at'];
-const SEARCH_FIELDS = ['status'];
+const TABLE = 'invoices';
+const COLUMNS = ['patient_id', 'total', 'status', 'created_at'];
+const SEARCH_FIELDS = ['i.status', 'i.id', 'p.full_name', 'i.patient_id'];
 
 const list = async (search, page, pageSize) => {
   const { clause, params } = buildSearch(search, SEARCH_FIELDS);
   const { limit, offset } = paginationParams(page, pageSize);
   const [rows] = await pool.query(
-    `SELECT * FROM \`${TABLE}\`${clause} ORDER BY issued_at DESC LIMIT ? OFFSET ?`,
+    `SELECT i.*, p.full_name AS patient_name
+     FROM \`${TABLE}\` i
+     JOIN patients p ON p.id = i.patient_id
+     ${clause}
+     ORDER BY i.created_at DESC
+     LIMIT ? OFFSET ?`,
     [...params, limit, offset]
   );
   return rows;

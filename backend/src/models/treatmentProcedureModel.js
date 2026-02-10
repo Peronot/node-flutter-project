@@ -1,24 +1,26 @@
 const { pool } = require('../config/db');
 const { pickFields, paginationParams } = require('../utils/dbUtils');
 
-const TABLE = 'treatmentprocedure';
-const COLUMNS = ['treatmentId', 'procedureId'];
+const TABLE = 'treatment_procedures';
+const COLUMNS = ['treatment_id', 'procedure_id'];
 
 const list = async (filters = {}, page, pageSize) => {
   const clauses = [];
   const params = [];
-  if (filters.treatmentId) {
-    clauses.push('treatmentId = ?');
-    params.push(filters.treatmentId);
+  const treatmentId = filters.treatment_id ?? filters.treatmentId;
+  const procedureId = filters.procedure_id ?? filters.procedureId;
+  if (treatmentId) {
+    clauses.push('treatment_id = ?');
+    params.push(treatmentId);
   }
-  if (filters.procedureId) {
-    clauses.push('procedureId = ?');
-    params.push(filters.procedureId);
+  if (procedureId) {
+    clauses.push('procedure_id = ?');
+    params.push(procedureId);
   }
   const where = clauses.length ? ' WHERE ' + clauses.join(' AND ') : '';
   const { limit, offset } = paginationParams(page, pageSize);
   const [rows] = await pool.query(
-    `SELECT * FROM \`${TABLE}\`${where} ORDER BY treatmentId, procedureId LIMIT ? OFFSET ?`,
+    `SELECT * FROM \`${TABLE}\`${where} ORDER BY treatment_id, procedure_id LIMIT ? OFFSET ?`,
     [...params, limit, offset]
   );
   return rows;
@@ -26,7 +28,7 @@ const list = async (filters = {}, page, pageSize) => {
 
 const find = async (treatmentId, procedureId) => {
   const [rows] = await pool.query(
-    `SELECT * FROM \`${TABLE}\` WHERE treatmentId = ? AND procedureId = ?`,
+    `SELECT * FROM \`${TABLE}\` WHERE treatment_id = ? AND procedure_id = ?`,
     [treatmentId, procedureId]
   );
   return rows[0] || null;
@@ -42,14 +44,14 @@ const update = async (treatmentId, procedureId, data) => {
   const payload = pickFields(data, COLUMNS);
   if (!Object.keys(payload).length) return find(treatmentId, procedureId);
   await pool.query(
-    `UPDATE \`${TABLE}\` SET ? WHERE treatmentId = ? AND procedureId = ?`,
+    `UPDATE \`${TABLE}\` SET ? WHERE treatment_id = ? AND procedure_id = ?`,
     [payload, treatmentId, procedureId]
   );
-  return find(payload.treatmentId || treatmentId, payload.procedureId || procedureId);
+  return find(payload.treatment_id || treatmentId, payload.procedure_id || procedureId);
 };
 
 const remove = async (treatmentId, procedureId) => {
-  await pool.query(`DELETE FROM \`${TABLE}\` WHERE treatmentId = ? AND procedureId = ?`, [treatmentId, procedureId]);
+  await pool.query(`DELETE FROM \`${TABLE}\` WHERE treatment_id = ? AND procedure_id = ?`, [treatmentId, procedureId]);
 };
 
 module.exports = { list, find, create, update, remove };

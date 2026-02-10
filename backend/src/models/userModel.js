@@ -1,19 +1,19 @@
 const { pool } = require('../config/db');
 const { buildSearch, pickFields } = require('../utils/dbUtils');
 
-const TABLE = 'user';
-const COLUMNS = ['full_name', 'email', 'password', 'role', 'created_at'];
-const SEARCH_FIELDS = ['full_name', 'email', 'role'];
+const TABLE = 'users';
+const COLUMNS = ['full_name', 'email', 'password', 'role_id', 'doctor_id', 'created_at'];
+const SEARCH_FIELDS = ['full_name', 'email', 'role_id'];
 
 const list = async (search) => {
   const { clause, params } = buildSearch(search, SEARCH_FIELDS);
-  const [rows] = await pool.query(`SELECT id, full_name, email, role, created_at FROM \`${TABLE}\`${clause} ORDER BY id DESC`, params);
+  const [rows] = await pool.query(`SELECT id, full_name, email, role_id, doctor_id, created_at FROM \`${TABLE}\`${clause} ORDER BY id DESC`, params);
   return rows;
 };
 
 const findById = async (id) => {
   const [rows] = await pool.query(
-    `SELECT id, full_name, email, role, created_at FROM \`${TABLE}\` WHERE id = ?`,
+    `SELECT id, full_name, email, role_id, doctor_id, created_at FROM \`${TABLE}\` WHERE id = ?`,
     [id]
   );
   return rows[0] || null;
@@ -26,7 +26,7 @@ const findWithPasswordById = async (id) => {
 
 const findByEmail = async (email) => {
   const [rows] = await pool.query(
-    `SELECT id, full_name, email, role, created_at FROM \`${TABLE}\` WHERE email = ?`,
+    `SELECT id, full_name, email, role_id, doctor_id, created_at FROM \`${TABLE}\` WHERE email = ?`,
     [email]
   );
   return rows[0] || null;

@@ -2,8 +2,12 @@ const Joi = require('joi');
 
 const base = {
   full_name: Joi.string().min(2).max(120),
-  specialty: Joi.string().max(120),
-  phone: Joi.string().max(30)
+  specialization: Joi.string().max(120),
+  phone: Joi.string().max(30),
+  photo: Joi.string()
+    .uri({ scheme: [/https?/, /data/] })
+    .message('photo must be a valid http(s) or data URI')
+    .optional()
 };
 
 const createDoctor = Joi.object({

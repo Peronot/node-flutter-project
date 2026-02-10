@@ -1,20 +1,18 @@
 const Joi = require('joi');
 
 const base = {
-  patientId: Joi.number().integer().positive(),
-  doctorId: Joi.number().integer().positive(),
+  patient_id: Joi.number().integer().positive(),
   total: Joi.number().precision(2),
   status: Joi.string().valid('unpaid', 'paid', 'cancelled'),
-  issued_at: Joi.date().iso()
+  created_at: Joi.date().iso()
 };
 
 const createInvoice = Joi.object({
   ...base,
-  patientId: base.patientId.required(),
-  doctorId: base.doctorId.required(),
+  patient_id: base.patient_id.required(),
   total: base.total.required(),
   status: base.status.default('unpaid'),
-  issued_at: base.issued_at.default(new Date())
+  created_at: base.created_at.default(new Date())
 });
 
 const updateInvoice = Joi.object(base);

@@ -1,5 +1,7 @@
 const model = require('../models/medicalHistoryModel');
 const asyncHandler = require('../utils/asyncHandler');
+const validate = require('../middleware/validate');
+const { createMedicalHistory, updateMedicalHistory } = require('../validators/medicalHistorySchemas');
 
 exports.list = asyncHandler(async (req, res) => {
   const rows = await model.list(req.query.search, req.query.page, req.query.pageSize);
@@ -12,17 +14,23 @@ exports.get = asyncHandler(async (req, res) => {
   res.json(row);
 });
 
-exports.create = asyncHandler(async (req, res) => {
-  const created = await model.create(req.body);
-  res.status(201).json(created);
-});
+exports.create = [
+  validate(createMedicalHistory),
+  asyncHandler(async (req, res) => {
+    const created = await model.create(req.validatedBody);
+    res.status(201).json(created);
+  })
+];
 
-exports.update = asyncHandler(async (req, res) => {
-  const exists = await model.findById(req.params.id);
-  if (!exists) return res.status(404).json({ message: 'Medical history entry not found' });
-  const updated = await model.update(req.params.id, req.body);
-  res.json(updated);
-});
+exports.update = [
+  validate(updateMedicalHistory),
+  asyncHandler(async (req, res) => {
+    const exists = await model.findById(req.params.id);
+    if (!exists) return res.status(404).json({ message: 'Medical history entry not found' });
+    const updated = await model.update(req.params.id, req.validatedBody);
+    res.json(updated);
+  })
+];
 
 exports.remove = asyncHandler(async (req, res) => {
   await model.remove(req.params.id);

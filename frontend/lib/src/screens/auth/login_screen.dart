@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import '../../services/api_client.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/alerts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,8 +13,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'Admin User');
-  final _passwordController = TextEditingController(text: 'password');
+  final _emailController = TextEditingController(text: '');
+  final _passwordController = TextEditingController(text: '');
   bool _rememberMe = true;
   bool _obscure = true;
   bool _loading = false;
@@ -40,6 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _loading = false;
         _error = null;
       });
+      await AlertHelper.success(context, 'Login successful');
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/dashboard');
     } catch (e) {
       if (!mounted) return;
@@ -63,14 +66,14 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 12),
-                Text('SmartNest',
+                Text('Daryeel Dental',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w700,
                         )),
                 const SizedBox(height: 12),
                 Text(
-                  'Welcome to SmartNest login now!',
+                  'Welcome to Daryeel Dental login now!',
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
@@ -79,6 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 18),
                 Card(
+                  color: Colors.white,
                   elevation: 4,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   child: Padding(
@@ -94,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _emailController,
                             keyboardType: TextInputType.text,
                             validator: (v) => (v == null || v.isEmpty) ? 'Username required' : null,
-                            decoration: const InputDecoration(hintText: 'admin@example.com or Admin User'),
+                            decoration: const InputDecoration(hintText: ''),
                           ),
                           const SizedBox(height: 16),
                           Text('Password', style: Theme.of(context).textTheme.labelLarge),
@@ -104,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: _obscure,
                             validator: (v) => (v == null || v.isEmpty) ? 'Password required' : null,
                             decoration: InputDecoration(
-                              hintText: '••••••••',
+                              hintText: '',
                               suffixIcon: IconButton(
                                 icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
                                 onPressed: () => setState(() => _obscure = !_obscure),
@@ -121,16 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               const SizedBox(width: 4),
                               const Text('Remember me'),
-                              const Spacer(),
-                              Flexible(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () {},
-                                    child: const Text('Forget password?'),
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
                           const SizedBox(height: 12),
@@ -153,25 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   : const Text('Login'),
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Center(
-                            child: Text(
-                              'Or sign in with',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: AppColors.textLight, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
-                              _SocialButton(icon: Icons.facebook, color: Color(0xFF1877F2)),
-                              _SocialButton(icon: Icons.g_mobiledata, color: Color(0xFFDB4437)),
-                              _SocialButton(icon: Icons.apple, color: Colors.black),
-                            ],
-                          )
                         ],
                       ),
                     ),
@@ -182,25 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _SocialButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  const _SocialButton({required this.icon, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Color(0x14212529), blurRadius: 8, offset: Offset(0, 4))],
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Icon(icon, color: color, size: 28),
     );
   }
 }

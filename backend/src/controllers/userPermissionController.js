@@ -6,8 +6,8 @@ const { createUserPermission, updateUserPermission } = require('../validators/us
 exports.list = asyncHandler(async (req, res) => {
   const rows = await model.list(
     {
-      userId: req.query.userId,
-      permissionId: req.query.permissionId
+      userId: req.query.userId ?? req.query.user_id,
+      permissionId: req.query.permissionId ?? req.query.permission_id
     },
     req.query.page,
     req.query.pageSize

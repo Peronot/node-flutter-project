@@ -12,8 +12,9 @@ app.use(cors({
   origin: allowedOrigins.length ? allowedOrigins : '*'
 }));
 
-// Body parsing
-app.use(express.json());
+// Body parsing (raise limit for photo/data URIs)
+const jsonLimit = process.env.JSON_LIMIT || '50mb';
+app.use(express.json({ limit: jsonLimit }));
 
 // Basic rate limiting
 const limiter = rateLimit({
